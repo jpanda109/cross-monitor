@@ -34,7 +34,7 @@ io.on('connection', function(socket) {
         info = mouseEvent.split(' ');
         var curX = info[0].substr(2);
         var curY = info[1].substr(2);
-        if (curX !== lastX && curY !== lastY) {
+        if (curX !== lastX || curY !== lastY) {
             socket.emit('mouseEvent', curX + ' ' + curY);
         };
         lastX = curX;

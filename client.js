@@ -19,7 +19,7 @@ socket.on('connect', function() {
 
 socket.on('mouseEvent', function(data) {
     console.log(data);
-    fs.appendFile('./mouseEvents.txt', data, function(err) {
+    fs.appendFile('./mouseEvents.txt', 'xdotool mousemove ' + data + '\n', function(err) {
         if (err) {
             return console.log(err);
         }
