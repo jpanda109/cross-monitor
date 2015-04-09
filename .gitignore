@@ -8,3 +8,5 @@ mouseTest
 *.swp
 mouseEvents.txt
 *.log
+a.out
+mouse.cpp
