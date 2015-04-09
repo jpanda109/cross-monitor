@@ -18,7 +18,7 @@ io.on('connection', function(socket) {
 
     valid_connection = false;
 
-    var mouseTest = child_process.spawn('./mouseTest', {
+    var mouseTest = child_process.spawn('./echomousepos', {
         stdio: [
             0,
             'pipe',
@@ -27,14 +27,26 @@ io.on('connection', function(socket) {
     });
     var inputStream = mouseTest.stdout;
     inputStream.setEncoding('utf8');
+    var lastX = '0';
+    var lastY = '0';
     inputStream.on('readable', function() {
-        socket.emit('mouseEvent', inputStream.read());
+        mouseEvent = inputStream.read();
+        info = mouseEvent.split(' ');
+        var curX = info[0].substr(2);
+        var curY = info[1].substr(2);
+        if (curX !== lastX && curY !== lastY) {
+            socket.emit('mouseEvent', curX + ' ' + curY);
+        };
+        lastX = curX;
+        lastY = curY;
     });
+
     var errStream = mouseTest.stderr;
     errStream.setEncoding('utf8');
     errStream.on('readable', function() {
         console.log(errStream.read());
     });
+
 
     socket.on('validateSession', function(data) {
         console.log('validating');

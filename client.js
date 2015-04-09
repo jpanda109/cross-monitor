@@ -1,5 +1,11 @@
 var socket = require('socket.io-client')('http://localhost:3000');
 var config = require('./config.json');
+var fs = require('fs');
+
+try {
+    fs.unlinkSync('./mouseEvents.txt');
+}
+catch (err) {}
 
 
 socket.on('connect', function() {
@@ -13,6 +19,11 @@ socket.on('connect', function() {
 
 socket.on('mouseEvent', function(data) {
     console.log(data);
+    fs.appendFile('./mouseEvents.txt', data, function(err) {
+        if (err) {
+            return console.log(err);
+        }
+    });
 });
 
 
