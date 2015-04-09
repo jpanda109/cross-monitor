@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var child_process = require('child_process');
+var Readable = require('stream').Readable;
 
 var config = require('./config.json');
 
@@ -16,9 +18,22 @@ io.on('connection', function(socket) {
 
     valid_connection = false;
 
-    app.get('/', function(req, res) {
-        socket.emit('randomEvent', 'random');
-        res.end('success');
+    var mouseTest = child_process.spawn('./mouseTest', {
+        stdio: [
+            0,
+            'pipe',
+            'pipe'
+        ]
+    });
+    var inputStream = mouseTest.stdout;
+    inputStream.setEncoding('utf8');
+    inputStream.on('readable', function() {
+        socket.emit('mouseEvent', inputStream.read());
+    });
+    var errStream = mouseTest.stderr;
+    errStream.setEncoding('utf8');
+    errStream.on('readable', function() {
+        console.log(errStream.read());
     });
 
     socket.on('validateSession', function(data) {
