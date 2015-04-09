@@ -6,3 +6,5 @@ CMakeCache.txt
 mouseTest
 
 *.swp
+mouseEvents.txt
+*.log
