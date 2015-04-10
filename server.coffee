@@ -42,7 +42,8 @@ server.listen 3000, () =>
                     curScreen -= 1
                     console.log curScreen
         if curX != lastX or curY != lastY
-            io.emit 'mouseEvent', curX + ' ' + curY
+            if curScreen != 0
+                io.sockets.connected[screenToSocket[curScreen]].emit 'mouseEvent', curX + ' ' + curY
         lastX = curX
         lastY = curY
 
@@ -57,3 +58,8 @@ io.on 'connection', (socket) =>
     console.log 'new connection from ' + socket.handshake.address
 
     maxScreen += 1
+    screenToSocket[maxScreen] = socket.id
+
+    socket.on 'disconnect', () =>
+        maxScreen -= 1
+
