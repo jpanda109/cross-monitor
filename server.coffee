@@ -29,12 +29,12 @@ io.on 'connection', (socket) =>
         info = mouseEvent.split ' '
         curX = info[0].substr 2
         curY = info[1].substr 2
-        if parseInt(curX) >= 1917
-            child_process.exec 'xdotool mousemove 4 ' + curY, (err, stdout, stderr) =>
+        if parseInt(curX) >= 1919
+            child_process.exec 'xdotool mousemove 2 ' + curY, (err, stdout, stderr) =>
                 if err
                     console.log 'exec error: ' + err
-        if parseInt(curX) <= 3
-            child_process.exec 'xdotool mousemove 1916 ' + curY, (err, stdout, stderr) =>
+        if parseInt(curX) <= 1
+            child_process.exec 'xdotool mousemove 1918 ' + curY, (err, stdout, stderr) =>
                 if err
                     console.log 'exec error: ' + err
         if curX != lastX or curY != lastY
