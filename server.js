@@ -34,6 +34,20 @@ io.on('connection', function(socket) {
         info = mouseEvent.split(' ');
         var curX = info[0].substr(2);
         var curY = info[1].substr(2);
+        if (+ curX >= '1917') {
+            child_process.exec('xdotool mousemove 4 ' + curY, function(err, stdout, stderr) {
+                if (err) {
+                    console.log('exec error: ' + err);
+                }
+            });
+        }
+        if (+ curX <= '3') {
+            child_process.exec('xdotool mousemove 1916 ' + curY, function(err, stdout, stderr) {
+                if (err) {
+                    console.log('exec error: ' + err);
+                }
+            });
+        }
         if (curX !== lastX || curY !== lastY) {
             socket.emit('mouseEvent', curX + ' ' + curY);
         };
