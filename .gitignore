@@ -9,4 +9,3 @@ mouseTest
 mouseEvents.txt
 *.log
 a.out
-mouse.cpp
