@@ -8,7 +8,7 @@ std::string key_name[] = {
     "second (or middle)",
     "third",
     "fourth",  // :D
-    "fivth"    // :|
+    "fifth"    // :|
 };
 
 int main(int argc, char **argv)
@@ -24,12 +24,12 @@ int main(int argc, char **argv)
     window = DefaultRootWindow(display);
     XAllowEvents(display, AsyncBoth, CurrentTime);
 
-    XGrabPointer(display, 
+    XGrabPointer(display,
                  window,
-                 1, 
-                 PointerMotionMask | ButtonPressMask | ButtonReleaseMask , 
+                 1,
+                 PointerMotionMask | ButtonPressMask | ButtonReleaseMask ,
                  GrabModeAsync,
-                 GrabModeAsync, 
+                 GrabModeAsync,
                  None,
                  None,
                  CurrentTime);
