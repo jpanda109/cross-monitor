@@ -20,11 +20,12 @@ bool getEvents = true;
 std::condition_variable cv;
 std::mutex mtx;
 
+/* process input stream commands to stop or resume pointer monitoring */
 void process_input(Display *display, Window window) {
     std::string str_input;
     while (true) {
         getline(std::cin, str_input);
-        if (str_input == "getEvents") {
+        if (str_input == "resume") {
             XGrabPointer(display,
                          window,
                          1,

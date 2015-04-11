@@ -1,5 +1,0 @@
-#!/bin/bash
-
-while read l; do
-    $l
-done < mouseEvents.txt
