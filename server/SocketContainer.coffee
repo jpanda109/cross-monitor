@@ -25,19 +25,10 @@ SocketContainer.prototype.getSockets = ->
 SocketContainer.prototype.getMainScreen = ->
   return this._mainScreen
 
-container = new SocketContainer()
-container.addSocket 10, 1
-console.log container.getSockets().join()
-console.log container.getMainScreen()
-container.addSocket 20, 2
-console.log container.getSockets().join()
-console.log container.getMainScreen()
-container.addSocket 30, 0
-console.log container.getSockets().join()
-console.log container.getMainScreen()
-container.addSocket 40, 3
-console.log container.getSockets().join()
-console.log container.getMainScreen()
+SocketContainer.prototype.length =->
+  return this._sockets.length
 
+SocketContainer.prototype.getSocket = (i) ->
+  return this._sockets[i]
 
 module.exports = SocketContainer
