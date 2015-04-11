@@ -4,6 +4,7 @@ Makefile
 CMakeFiles
 CMakeCache.txt
 mouseTest
+test/
 
 *.swp
 mouseEvents.txt
