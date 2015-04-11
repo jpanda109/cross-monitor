@@ -4,8 +4,6 @@ server = require('http').createServer app
 io = require('socket.io') server
 child_process = require 'child_process'
 
-config = require './config.json'
-
 minScreen = 0
 maxScreen = 0
 curScreen = 0
