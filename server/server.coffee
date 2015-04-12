@@ -47,8 +47,9 @@ server.listen 3000, () =>
           else
             eventInputStream.write('resume\n')
 
-        if curScreen != 0  # if not on server screen, emit
-          io.sockets.connected[screenToSocket[curScreen]].emit 'mouseEvent', curX + ' ' + curY
+      console.log mouseEvent
+      if curScreen != 0  # if not on server screen, emit
+        io.sockets.connected[screenToSocket[curScreen]].emit 'event', mouseEvent
 
 
 io.on 'connection', (socket) =>

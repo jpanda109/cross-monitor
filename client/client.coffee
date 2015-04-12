@@ -11,7 +11,7 @@ socket.on 'connect', () =>
     console.log 'connected'
 
 
-socket.on 'mouseEvent', (data) =>
+socket.on 'event', (data) =>
     console.log data
     fs.appendFile './mouseEvents.txt', 'xdotool mousemove #data\n', (err) =>
         return console.log(err) if err

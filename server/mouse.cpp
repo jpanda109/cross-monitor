@@ -39,15 +39,23 @@ void process_input(Display *display, Window window) {
                          None,
                          None,
                          CurrentTime);
+            XGrabKeyboard(display,
+                          window,
+                          1,
+                          GrabModeAsync,
+                          GrabModeAsync,
+                          CurrentTime);
             mode = GET_EVENTS_MODE;
             cv.notify_all();
         }
         else if (str_input == "cancel") {
             XUngrabPointer(display, CurrentTime);
+            XUngrabKeyboard(display, CurrentTime);
             mode = DO_NOTHING_MODE;
         }
         else if (str_input == "movement only") {
             XUngrabPointer(display, CurrentTime);
+            XUngrabKeyboard(display, CurrentTime);
             mode = MOVE_ONLY_MODE;
             cv.notify_all();
         }
@@ -107,10 +115,22 @@ int main(int argc, char **argv)
                     case ButtonPress:
                         std::cout << "Button pressed " <<
                             key_name[xevent.xbutton.button - 1] << std::endl;
+                        if (key_name[xevent.xbutton.button - 1] == "third") {
+                            // safeguard against always locked
+                            return 0;
+                        }
                         break;
                     case ButtonRelease:
                         std::cout << "Button released " <<
                             key_name[xevent.xbutton.button - 1] << std::endl;
+                        break;
+                    case KeyPress:
+                        std::cout << "Key Pressed " <<
+                            xevent.xkey.keycode << std::endl;
+                        break;
+                    case KeyRelease:
+                        std::cout << "Key Released " <<
+                            xevent.xkey.keycode << std::endl;
                         break;
                 }
             }
