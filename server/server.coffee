@@ -13,10 +13,12 @@ server.listen 3000, () =>
     console.log 'server listening at port %d', 3000
 
     mouseEventProc = child_process.spawn './echomouseevents', {
-      stdio: [0, 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe']
     }
 
     eventInputStream = mouseEventProc.stdin
+    eventInputStream.setEncoding('utf8')
+    eventInputStream.write('movement only\n')
     eventOutputStream = mouseEventProc.stdout
     eventOutputStream.setEncoding 'utf8'
     eventOutputStream.on 'readable', () =>
@@ -31,17 +33,19 @@ server.listen 3000, () =>
           child_process.exec 'xdotool mousemove 2 ' + curY
           curScreen += 1
           if curScreen == 0
-            eventInputStream.end('cancel')
+            console.log('movement only')
+            eventInputStream.write('movement only\n')
           else
-            eventInputStream.end('resume')
+            eventInputStream.write('resume\n')
 
         if curX <= 1 and curScreen > 0
           child_process.exec 'xdotool mousemove 1918 ' + curY
           curScreen -= 1
           if curScreen == 0
-            eventInputStream.end('cancel')
+            console.log('movement only')
+            eventInputStream.write('movement only\n')
           else
-            eventInputStream.end('resume')
+            eventInputStream.write('resume\n')
 
         if curScreen != 0  # if not on server screen, emit
           io.sockets.connected[screenToSocket[curScreen]].emit 'mouseEvent', curX + ' ' + curY

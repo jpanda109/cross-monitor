@@ -1,7 +1,6 @@
 #include <array>
 #include <sstream>
 #include <iostream>
-#include <stdio.h>
 #include <X11/Xlib.h>
 #include <string>
 #include <thread>
@@ -48,6 +47,7 @@ void process_input(Display *display, Window window) {
             mode = DO_NOTHING_MODE;
         }
         else if (str_input == "movement only") {
+            XUngrabPointer(display, CurrentTime);
             mode = MOVE_ONLY_MODE;
             cv.notify_all();
         }
