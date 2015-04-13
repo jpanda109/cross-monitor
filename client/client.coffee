@@ -1,21 +1,21 @@
 socket = require('socket.io-client') 'http://localhost:3000'
-fs = require 'fs'
+encryption = require '../common/encyption.coffee'
+algorithm = 'aes-256-ctr'
+config = require './config.json'
+password = config.PASSWORD
 
-try
-    fs.unlinkSync './mouseEvents.txt'
-catch err
-    # ignore
 
 socket.on 'connect', () =>
 
-    console.log 'connected'
+  console.log 'connected'
 
 
 socket.on 'event', (data) =>
-    console.log data
-    fs.appendFile './mouseEvents.txt', 'xdotool mousemove #data\n', (err) =>
-        return console.log(err) if err
+
+  decrypted_data = encryption.decrypt data, algorithm, password
+  console.log decrypted_data
 
 
 socket.on 'disconnect', () =>
-    console.log 'client disconnect'
+
+  console.log 'client disconnect'

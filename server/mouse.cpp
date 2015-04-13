@@ -109,11 +109,11 @@ int main(int argc, char **argv)
 
                 switch (xevent.type) {
                     case MotionNotify:
-                        std::cout << "Mouse move " << xevent.xmotion.x_root << " "
+                        std::cout << "Mouse Move " << xevent.xmotion.x_root << " "
                             << xevent.xmotion.y_root << std::endl;
                         break;
                     case ButtonPress:
-                        std::cout << "Button pressed " <<
+                        std::cout << "Button Pressed " <<
                             key_name[xevent.xbutton.button - 1] << std::endl;
                         if (key_name[xevent.xbutton.button - 1] == "third") {
                             // safeguard against always locked
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
                         }
                         break;
                     case ButtonRelease:
-                        std::cout << "Button released " <<
+                        std::cout << "Button Released " <<
                             key_name[xevent.xbutton.button - 1] << std::endl;
                         break;
                     case KeyPress:

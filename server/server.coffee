@@ -3,6 +3,11 @@ app = express()
 server = require('http').createServer app
 io = require('socket.io') server
 child_process = require 'child_process'
+crypto = require 'crypto'
+crypto_algorithm = 'aes-256-ctr'
+config = require './config.json'
+password = config.PASSWORD
+encryption = require '../common/encyption.coffee'
 
 numScreens = 0
 curScreen = 0
@@ -49,6 +54,7 @@ server.listen 3000, () =>
 
       console.log mouseEvent
       if curScreen != 0  # if not on server screen, emit
+        encrypted_event = encryption.encrypt mouseEvent, crypto_algorithm, password
         io.sockets.connected[screenToSocket[curScreen]].emit 'event', mouseEvent
 
 
