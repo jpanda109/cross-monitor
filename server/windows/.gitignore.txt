@@ -1,4 +1,0 @@
-Debug
-windows.opensdf
-windows.sdf
-windows.v12.suo
