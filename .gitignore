@@ -10,3 +10,15 @@ test/
 mouseEvents.txt
 *.log
 a.out
+*.exe
+*.ilk
+server/windows/Debug/windows.pdb
+*.sdf
+server/windows/windows.v12.suo
+*.pdb
+server/windows/windows/Debug/windows.tlog/cl.command.1.tlog
+*.lastbuildstate
+server/windows/windows/Debug/windows.tlog/link.read.1.tlog
+*.tlog
+server/windows/windows/Debug/main.obj
+*.opensdf
