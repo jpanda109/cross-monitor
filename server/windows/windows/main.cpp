@@ -1,10 +1,13 @@
 #include <iostream>
+#include <stdio.h>
+#include <fstream>
+#include <cstdio>
 #include <thread>
 #include <string>
 #include <unordered_map>
+#include <bitset>
 #include <Windows.h>
 
-bool QUIT = false;
 typedef struct Keymap : std::unordered_map<unsigned long, bool> {
     Keymap() {
         for (int i = 0; i < 256; ++i) {
@@ -13,6 +16,8 @@ typedef struct Keymap : std::unordered_map<unsigned long, bool> {
     }
 } Keymap;  // keycode : isPressed
 Keymap keymap;
+bool QUIT = false;
+DWORD mainThreadId;
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 
@@ -25,6 +30,9 @@ void exitProgram();
 
 int main() {
 
+    std::ios::sync_with_stdio(false);  // not using stdio, boost performance
+
+    mainThreadId = GetCurrentThreadId();
     std::thread input_thread(processInput);
 
     HHOOK llkbHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, 0, 0);
@@ -33,14 +41,6 @@ int main() {
     GetMessage(&msg, NULL, NULL, NULL);
     UnhookWindowsHookEx(llkbHook);
     UnhookWindowsHookEx(llmHook);
-    //POINT newPoint;
-    //POINT oldPoint = { 0, 0 };
-    //while (!QUIT) {
-        //if (GetCursorPos(&newPoint) && newPoint.x != oldPoint.x && newPoint.y != oldPoint.y) {
-            //std::cout << newPoint.x << ":" << newPoint.y << std::endl;
-            //oldPoint = newPoint;
-        //}
-    //}
 
     input_thread.join();
 
@@ -66,9 +66,11 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             break;
         }
     }
+#ifdef _DEBUG
     if (keymap[162] && keymap[160] && keymap[115]) {  // ctrl+shift+f4
         exitProgram();
     }
+#endif
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
@@ -77,22 +79,26 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
         PMSLLHOOKSTRUCT p = (PMSLLHOOKSTRUCT)lParam;
         switch (wParam) {
         case WM_MOUSEWHEEL:
-            std::cout << "MouseScroll" << p->mouseData << std::endl;
+            std::cout << "MouseScroll" << std::bitset<32>(p->mouseData).to_string() << std::endl;
             break;
-        case WM_XBUTTONDOWN:
-        case WM_NCXBUTTONDOWN:
-            std::cout << "MouseButtonDown" << p->mouseData << std::endl;
+        case WM_MOUSEHWHEEL:
+            std::cout << "HMouseScroll" << std::endl;
             break;
-        case WM_XBUTTONUP:
-        case WM_NCXBUTTONUP:
-            std::cout << "MouseButtonUp" << p->mouseData << std::endl;
+        case WM_LBUTTONDOWN:
+            std::cout << "MouseButtonDown LEFT" << std::endl;
             break;
-        case WM_XBUTTONDBLCLK:
-        case WM_NCXBUTTONDBLCLK:
-            std::cout << "MouseButtonDoubleClick" << p->mouseData << std::endl;
+        case WM_RBUTTONDOWN:
+            std::cout << "MouseButtonDown RIGHT" << p->mouseData << std::endl;
             break;
-        default:
+        case WM_LBUTTONUP:
+            std::cout << "MouseButtonUp LEFT" << std::endl;
+            break;
+        case WM_RBUTTONUP:
+            std::cout << "MouseButtonUp RIGHT" << std::endl;
+            break;
+        case WM_MOUSEMOVE:
             std::cout << "MouseMove " << p->pt.x << " " << p->pt.y << std::endl;
+            break;
         }
     }
     return CallNextHookEx(NULL, nCode, wParam, lParam);
@@ -105,10 +111,19 @@ void processInput() {
         if (str_input == "quit") {
             exitProgram();
         }
+        else if (str_input == "MovementOnly") {
+
+        }
+        else if (str_input == "DoNothing") {
+
+        }
+        else if (str_input == "CatchAll") {
+
+        }
     }
 }
 
 void exitProgram() {
-    PostQuitMessage(0);
+    PostThreadMessage(mainThreadId, WM_QUIT, 0, 0);
     QUIT = true;
 }
