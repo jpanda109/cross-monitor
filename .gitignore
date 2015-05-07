@@ -23,3 +23,5 @@ server/windows/windows/Debug/windows.tlog/link.read.1.tlog
 server/windows/windows/Debug/main.obj
 *.opensdf
 *.idb
+*.obj
+*.suo
