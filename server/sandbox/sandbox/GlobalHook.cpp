@@ -5,7 +5,15 @@
 #include <typeinfo>
 
 
-std::unordered_map<unsigned long, bool> keymap;  // keyCode : isPressed
+// std::unordered_map<unsigned long, bool> keymap;  // keyCode : isPressed
+typedef struct Keymap : std::unordered_map < unsigned long, bool > {
+    Keymap() {
+        for (int i = 0; i < 256; ++i) {
+            (*this)[i] = false;
+        }
+    }
+} Keymap;
+Keymap keymap;
 
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
@@ -13,7 +21,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
 void keymapInit();
 
 int main() {
-    keymapInit();
+    // keymapInit();
 
     // set global hook until program termination
     HHOOK llkbHook = SetWindowsHookEx(WH_KEYBOARD_LL, LowLevelKeyboardProc, 0, 0);
@@ -43,7 +51,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
             break;
         }
     }
-    if (keymap[162] && keymap[160] && keymap[115]) {  // ctrl+alt+shift
+    if (keymap[162] && keymap[160] && keymap[115]) {  // ctrl+shift+f4
         PostQuitMessage(0);
     }
     return CallNextHookEx(NULL, nCode, wParam, lParam);
