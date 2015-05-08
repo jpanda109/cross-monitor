@@ -1,11 +1,9 @@
 #include <iostream>
-#include <stdio.h>
 #include <fstream>
 #include <cstdio>
 #include <thread>
 #include <string>
 #include <unordered_map>
-#include <bitset>
 #include <Windows.h>
 
 typedef struct Keymap : std::unordered_map<unsigned long, bool> {
@@ -79,7 +77,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
         PMSLLHOOKSTRUCT p = (PMSLLHOOKSTRUCT)lParam;
         switch (wParam) {
         case WM_MOUSEWHEEL:
-            std::cout << "MouseScroll" << std::bitset<32>(p->mouseData).to_string() << std::endl;
+            std::cout << "MouseScroll" << std::endl;
             break;
         case WM_MOUSEHWHEEL:
             std::cout << "HMouseScroll" << std::endl;
@@ -88,7 +86,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
             std::cout << "MouseButtonDown LEFT" << std::endl;
             break;
         case WM_RBUTTONDOWN:
-            std::cout << "MouseButtonDown RIGHT" << p->mouseData << std::endl;
+            std::cout << "MouseButtonDown RIGHT" << std::endl;
             break;
         case WM_LBUTTONUP:
             std::cout << "MouseButtonUp LEFT" << std::endl;
