@@ -1,4 +1,3 @@
-fs = require 'fs'  # only for debugging
 express = require 'express'
 app = express()
 server = require('http').createServer(app)
@@ -12,17 +11,17 @@ screenToSocket = {}
 server.listen 3000, () =>
   console.log 'server listening at port %d', 3000
 
-  mouse = child_process.spawn './releasesrc/MoveMouse.exe', {
+  mouse = child_process.spawn './releasesrc/MoveMouse', {
     stdio: ['pipe', null, null]
   }
   mouseInputStream = mouse.stdin
-  eventListener = child_process.spawn './releasesrc/EventListener.exe', {
+  eventListener = child_process.spawn './releasesrc/EventListener', {
     stdio: ['pipe', 'pipe', 'pipe']
   }
 
   eventInputStream = eventListener.stdin
   eventInputStream.setEncoding 'utf8'
-  eventInputStream.write 'movement only\n'
+  eventInputStream.write 'MovementOnly\n'
 
   eventOutputStream = eventListener.stdout
   eventOutputStream.setEncoding 'utf8'
