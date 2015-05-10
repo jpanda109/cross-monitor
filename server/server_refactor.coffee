@@ -25,10 +25,10 @@ server.listen 3000, () =>
 
   eventOutputStream = eventListener.stdout
   eventOutputStream.setEncoding 'utf8'
-  eventOutputStream.on 'redeable', () =>
+  eventOutputStream.on 'readable', () =>
     event = eventOutputStream.read().trim()
     console.log event
-    info = mouseEvent.split(' ')
+    info = event.split(' ')
     if info[0] == 'MouseMove'
       curX = parseInt info[1]
       curY = parseInt info[2]
