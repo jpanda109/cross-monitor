@@ -6,15 +6,13 @@
 #include <unordered_map>
 #include <Windows.h>
 
-typedef struct Keymap : std::unordered_map<unsigned long, bool> {
-    Keymap() {
-        for (int i = 0; i < 256; ++i) {
-            (*this)[i] = false;
-        }
-    }
-} Keymap;  // keycode : isPressed
-Keymap keymap;
-bool QUIT = false;
+
+#define QUIT 0
+#define MOVEMENT_ONLY 1
+#define DO_NOTHING 2
+#define CATCH_ALL 3
+
+int currentMode = DO_NOTHING;
 DWORD mainThreadId;
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
@@ -47,6 +45,10 @@ int main() {
 
 
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (currentMode != CATCH_ALL) {  // only use this hook if block/catching all input
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
+    }
+
     unsigned long keycode;
     if (nCode == HC_ACTION) {
         PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT)lParam;
@@ -55,24 +57,25 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
             std::cout << "KeyDown" << keycode << std::endl;
-            keymap[keycode] = true;
             break;
         case WM_KEYUP:
         case WM_SYSKEYUP:
             std::cout << "KeyUp" << keycode << std::endl;
-            keymap[keycode] = false;
             break;
         }
     }
-#ifdef _DEBUG
-    if (keymap[162] && keymap[160] && keymap[115]) {  // ctrl+shift+f4
+#ifdef _DEBUG  // Just in case keyboard locks without escape
+    if (keycode == 115) {  // f4
         exitProgram();
     }
 #endif
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
+    return 1;
 }
 
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (currentMode == DO_NOTHING) {
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
+    }
     if (nCode == HC_ACTION) {
         PMSLLHOOKSTRUCT p = (PMSLLHOOKSTRUCT)lParam;
         switch (wParam) {
@@ -99,29 +102,29 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
             break;
         }
     }
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
+    return currentMode == CATCH_ALL && wParam != WM_MOUSEMOVE ? 1 : CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
 void processInput() {
     std::string str_input;
-    while (!QUIT) {
+    while (currentMode != QUIT) {
         std::getline(std::cin, str_input);
-        if (str_input == "quit") {
+        if (str_input == "Quit") {
             exitProgram();
         }
         else if (str_input == "MovementOnly") {
-
+            currentMode = MOVEMENT_ONLY;
         }
         else if (str_input == "DoNothing") {
-
+            currentMode = DO_NOTHING;
         }
         else if (str_input == "CatchAll") {
-
+            currentMode = CATCH_ALL;
         }
     }
 }
 
 void exitProgram() {
+    currentMode = QUIT;
     PostThreadMessage(mainThreadId, WM_QUIT, 0, 0);
-    QUIT = true;
 }
