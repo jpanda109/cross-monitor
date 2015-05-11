@@ -1,70 +1,59 @@
 express = require 'express'
 app = express()
-server = require('http').createServer app
-io = require('socket.io') server
+server = require('http').createServer(app)
+io = require('socket.io')(server)
 child_process = require 'child_process'
-crypto = require 'crypto'
-crypto_algorithm = 'aes-256-ctr'
-config = require './config.json'
-password = config.PASSWORD
-encryption = require '../common/encyption.coffee'
 
 numScreens = 0
 curScreen = 0
-
 screenToSocket = {}
 
 server.listen 3000, () =>
-    console.log 'server listening at port %d', 3000
+  console.log 'server listening at port %d', 3000
 
-    mouseEventProc = child_process.spawn './echomouseevents', {
-      stdio: ['pipe', 'pipe', 'pipe']
-    }
+  mouse = child_process.spawn './releasesrc/MoveMouse', {
+    stdio: ['pipe', null, null]
+  }
+  mouseInputStream = mouse.stdin
+  eventListener = child_process.spawn './releasesrc/EventListener', {
+    stdio: ['pipe', 'pipe', 'pipe']
+  }
 
-    eventInputStream = mouseEventProc.stdin
-    eventInputStream.setEncoding('utf8')
-    eventInputStream.write('movement only\n')
-    eventOutputStream = mouseEventProc.stdout
-    eventOutputStream.setEncoding 'utf8'
-    eventOutputStream.on 'readable', () =>
-      mouseEvent = eventOutputStream.read().trim()
-      info = mouseEvent.split ' '
-      if info[0] == 'Mouse'  # if it's a mouse move event
-        curX = parseInt(info[2])
-        curY = parseInt(info[3])
+  eventInputStream = eventListener.stdin
+  eventInputStream.setEncoding 'utf8'
+  eventInputStream.write 'MovementOnly\n'
 
-        # move mouse to other side of screen to simulate going to diff screen
-        if curX >= 1919 and curScreen < numScreens
-          child_process.exec 'xdotool mousemove 2 ' + curY
-          curScreen += 1
-          if curScreen == 0
-            console.log('movement only')
-            eventInputStream.write('movement only\n')
-          else
-            eventInputStream.write('resume\n')
+  eventOutputStream = eventListener.stdout
+  eventOutputStream.setEncoding 'utf8'
+  eventOutputStream.on 'readable', () =>
+    event = eventOutputStream.read().trim()
+    console.log event
+    info = event.split(' ')
+    if info[0] == 'MouseMove'
+      curX = parseInt info[1]
+      curY = parseInt info[2]
 
-        if curX <= 1 and curScreen > 0
-          child_process.exec 'xdotool mousemove 1918 ' + curY
-          curScreen -= 1
-          if curScreen == 0
-            console.log('movement only')
-            eventInputStream.write('movement only\n')
-          else
-            eventInputStream.write('resume\n')
+      if curX >= 1919 and curScreen < numScreens
+        mouseInputStream.write 'MoveMouse 2 %d\n', curY
+        curScreen += 1
+        if curScreen != 0
+          eventInputStream.write 'CatchAll\n'
+      else if curX <= 1 and curScreen > 0
+        mouseInputStream.write 'MoveMouse 1918 %d\n', curY
+        curScreen -= 1
+        if curScreen == 0
+          eventInputStream.write 'MovementOnly\n'
 
-      console.log mouseEvent
-      if curScreen != 0  # if not on server screen, emit
-        encrypted_event = encryption.encrypt mouseEvent, crypto_algorithm, password
-        io.sockets.connected[screenToSocket[curScreen]].emit 'event', mouseEvent
+    if curScreen != 0
+      io.sockets.connected[screenToSocket[curScreen]].emit 'event', event
 
 
 io.on 'connection', (socket) =>
 
-    console.log 'new connection from ' + socket.handshake.address
+  console.log 'new connection from ' + socket.handshake.address
 
-    numScreens += 1
-    screenToSocket[numScreens] = socket.id
+  numScreens += 1
+  screenToSocket[numScreens] = socket.id
 
-    socket.on 'disconnect', () =>
-        numScreens -= 1
-
+  socket.on 'disconnect', () =>
+    numScreens -= 1
