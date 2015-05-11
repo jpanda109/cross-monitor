@@ -27,7 +27,6 @@ server.listen 3000, () =>
   eventOutputStream.setEncoding 'utf8'
   eventOutputStream.on 'readable', () =>
     event = eventOutputStream.read().trim()
-    console.log event
     info = event.split(' ')
     if info[0] == 'MouseMove'
       curX = parseInt info[1]
@@ -51,9 +50,17 @@ server.listen 3000, () =>
 io.on 'connection', (socket) =>
 
   console.log 'new connection from ' + socket.handshake.address
-
-  numScreens += 1
-  screenToSocket[numScreens] = socket.id
+  console.log 'Accept connection? [Y/N]'
+  process.stdin.resume()
+  process.stdin.setEncoding('utf8')
+  process.stdin.on 'data', (text) =>
+    text = text.trim()
+    if text == 'Y'
+      numScreens += 1
+      screenToSocket[numScreens] = socket.id
+    else
+      socket.disconnect()
 
   socket.on 'disconnect', () =>
     numScreens -= 1
+    console.log socket.handshake.address + ' disconnect'
