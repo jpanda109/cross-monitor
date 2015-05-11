@@ -20,36 +20,34 @@ int main() {
         else if (tokens[0] == "Quit") {
             QUIT = true;
         }
-        else if (tokens[0] == "Mouse" && tokens.size() == 4) {
-            if (tokens[1] == "Move") {
-                try {
-                    int x = std::stoi(tokens[2]);
-                    int y = std::stoi(tokens[3]);
-                    SetCursorPos(x, y);
-                }
-                catch (std::invalid_argument) {}
+        else if (tokens[0] == "MoveMouse" && tokens.size() == 3) {
+            try {
+                int x = std::stoi(tokens[1]);
+                int y = std::stoi(tokens[2]);
+                SetCursorPos(x, y);
             }
-            else if (tokens[1] == "Button" && tokens.size() == 3) {
-                INPUT input;
-                input.type = INPUT_MOUSE;
-                if (tokens[2] == "Left") {
-                    if (tokens[3] == "Down") {
-                        input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-                    }
-                    else {
-                        input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-                    }
+            catch (std::invalid_argument) {}
+        }
+        else if (tokens[0] == "MouseClick" && tokens.size() == 3) {
+            INPUT input;
+            input.type = INPUT_MOUSE;
+            if (tokens[1] == "Left") {
+                if (tokens[2] == "Down") {
+                    input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
                 }
                 else {
-                    if (tokens[3] == "Down") {
-                        input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-                    }
-                    else {
-                        input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-                    }
+                    input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
                 }
-                SendInput(1, &input, sizeof(input));
             }
+            else {
+                if (tokens[2] == "Down") {
+                    input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+                }
+                else {
+                    input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+                }
+            }
+            SendInput(1, &input, sizeof(input));
         }
         else if (tokens[0] == "KeyPress" && tokens.size() == 3) {
             try {

@@ -56,11 +56,11 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
         switch (wParam) {
         case WM_KEYDOWN:
         case WM_SYSKEYDOWN:
-            std::cout << "KeyPress Down " << keycode << std::endl;
+            std::cout << "KeyDown" << keycode << std::endl;
             break;
         case WM_KEYUP:
         case WM_SYSKEYUP:
-            std::cout << "KeyPress Up " << keycode << std::endl;
+            std::cout << "KeyUp" << keycode << std::endl;
             break;
         }
     }
@@ -80,25 +80,25 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
         PMSLLHOOKSTRUCT p = (PMSLLHOOKSTRUCT)lParam;
         switch (wParam) {
         case WM_MOUSEWHEEL:
-            std::cout << "Mouse Scroll" << std::endl;
+            std::cout << "MouseScroll" << std::endl;
             break;
         case WM_MOUSEHWHEEL:
-            std::cout << "Mouse HScroll" << std::endl;
+            std::cout << "HMouseScroll" << std::endl;
             break;
         case WM_LBUTTONDOWN:
-            std::cout << "Mouse Button Left Down" << std::endl;
+            std::cout << "MouseButtonDown LEFT" << std::endl;
             break;
         case WM_RBUTTONDOWN:
-            std::cout << "Mouse Button Right Down" << std::endl;
+            std::cout << "MouseButtonDown RIGHT" << std::endl;
             break;
         case WM_LBUTTONUP:
-            std::cout << "Mouse Button Left Up" << std::endl;
+            std::cout << "MouseButtonUp LEFT" << std::endl;
             break;
         case WM_RBUTTONUP:
-            std::cout << "Mouse Button Right Up" << std::endl;
+            std::cout << "MouseButtonUp RIGHT" << std::endl;
             break;
         case WM_MOUSEMOVE:
-            std::cout << "Mouse Move " << p->pt.x << " " << p->pt.y << std::endl;
+            std::cout << "MouseMove " << p->pt.x << " " << p->pt.y << std::endl;
             break;
         }
     }
