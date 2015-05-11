@@ -3,6 +3,8 @@ app = express()
 server = require('http').createServer(app)
 io = require('socket.io')(server)
 child_process = require 'child_process'
+encryption = require './encryption.coffee'
+config = require './config.json'
 
 numScreens = 0
 curScreen = 0
@@ -34,7 +36,6 @@ server.listen 3000, () =>
         curY = parseInt info[3]
 
         if curX >= 1919 and curScreen < numScreens
-          console.log 'hi'
           mouseInputStream.write 'MoveMouse 2 ' + curY + '\n'
           curScreen += 1
           if curScreen != 0
@@ -46,7 +47,8 @@ server.listen 3000, () =>
             eventInputStream.write 'MovementOnly\n'
 
     if curScreen != 0
-      io.sockets.connected[sockets[curScreen-1]].emit 'event', event
+      encryptedEvent = encryption.encrypt(event, config.PASSWORD)
+      io.sockets.connected[sockets[curScreen-1]].emit 'event', encryptedEvent
 
 
 io.on 'connection', (socket) =>
