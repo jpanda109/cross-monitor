@@ -25,3 +25,4 @@ server/windows/windows/Debug/main.obj
 *.idb
 *.obj
 *.suo
+*.out
