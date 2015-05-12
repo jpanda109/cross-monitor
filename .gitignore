@@ -5,6 +5,8 @@ CMakeFiles
 CMakeCache.txt
 mouseTest
 test/
+client/releasesrc
+server/releasesrc
 
 *.swp
 mouseEvents.txt
@@ -26,3 +28,4 @@ server/windows/windows/Debug/main.obj
 *.obj
 *.suo
 *.out
+.idea
