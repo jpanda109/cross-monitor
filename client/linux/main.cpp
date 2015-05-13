@@ -1,12 +1,13 @@
 #include <iostream>
 #include <X11/extensions/XTest.h>
-#include <unistd.h>
 #include <sstream>
 #include <vector>
 #include <algorithm>
 
 
-std::vector<std::string> splitInfo(std::string input) {
+bool QUIT = false;
+
+std::vector<std::string> splitString(std::string &input) {
     std::vector<std::string> info;
     std::stringstream ssin(input);
     while (ssin.good()) {
@@ -20,43 +21,60 @@ std::vector<std::string> splitInfo(std::string input) {
 int main() {
     Display *display = nullptr;
 
-    while (true) {
+    while (!QUIT) {
         display = XOpenDisplay(nullptr);
         std::string input;
         std::getline(std::cin, input);
         input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
-        std::vector<std::string> info = splitInfo(input);
-        if (info[0] == "quit" || info[0] == "Quit") {
-            XCloseDisplay(display);
-            return 0;
+        std::vector<std::string> tokens = splitString(input);
+        if (tokens[0] == "quit" || tokens[0] == "Quit") {
+            QUIT = true;
         }
-        else if (info[0] == "Mouse") {
-            std::cout << info[2] << " " << info[3] << std::endl;
-            XTestFakeMotionEvent(display, 0, std::stoi(info[2]), std::stoi(info[3]), CurrentTime);
-            XCloseDisplay(display);
-        }
-        else if (info[0] == "Button") {
-            if (info[1] == "Pressed") {
-                XTestFakeButtonEvent(display, (unsigned int) std::stoi(info[2]), true, CurrentTime);
-                XCloseDisplay(display);
+        else if (tokens[0] == "Mouse" && tokens.size() == 4) {
+            if (tokens[1] == "Move") {
+                try {
+                    int x = std::stoi(tokens[2]);
+                    int y = std::stoi(tokens[3]);
+                    XTestFakeMotionEvent(display, 0, x, y, CurrentTime);
+                }
+                catch (std::invalid_argument) {}
             }
-            else if (info[1] == "Released") {
-                XTestFakeButtonEvent(display, (unsigned int) std::stoi(info[2]), false, CurrentTime);
-                XCloseDisplay(display);
-            }
-        }
-        else if (info[0] == "Key") {
-            if (info[1] == "Pressed") {
-                XTestFakeKeyEvent(display, (unsigned int) std::stoi(info[2]), true, 0);
-                XCloseDisplay(display);
-            }
-            if (info[1] == "Released") {
-                XTestFakeKeyEvent(display, (unsigned int) std::stoi(info[2]), false, 0);
-                XCloseDisplay(display);
+            else if (tokens[1] == "Button" && tokens.size() == 3) {
+                if (tokens[2] == "Left" && tokens[3] == "Down") {
+                    XTestFakeButtonEvent(display, 0, true, CurrentTime);
+                }
+                else if (tokens[2] == "Left" && tokens[3] == "Up") {
+                    XTestFakeButtonEvent(display, 0, false, CurrentTime);
+                }
+                else if (tokens[2] == "Right" && tokens[3] == "Down") {
+                    XTestFakeButtonEvent(display, 2, true, CurrentTime);
+                }
+                else if (tokens[2] == "Right" && tokens[3] == "Up") {
+                    XTestFakeButtonEvent(display, 0, false, CurrentTime);
+                }
             }
         }
+        else if (tokens[0] == "KeyPress" && tokens.size() == 3) {
+            try {
+                unsigned int keycode = (unsigned int) std::stoi(tokens[2]);
+                if (tokens[1] == "Down") {
+                    XTestFakeKeyEvent(display, keycode, true, 0);
+                }
+                else if (tokens[1] == "Up") {
+                    XTestFakeKeyEvent(display, keycode, false, 0);
+                }
+            }
+            catch (std::invalid_argument) {}
+        }
+#ifdef _DEBUG
         else {
-            XCloseDisplay(display);
+            std::cout << input << std::endl;
         }
+#endif
+        XSync(display, 0);
+
     }
+
+    XCloseDisplay(display);
+    return 0;
 }

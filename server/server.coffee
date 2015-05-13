@@ -29,6 +29,7 @@ server.listen 3000, () =>
   eventOutputStream.setEncoding 'utf8'
   eventOutputStream.on 'readable', () =>
     event = eventOutputStream.read().trim()
+    console.log(event);
     info = event.split(' ')
     if info[0] == 'Mouse'
       if info[1] == 'Move'
