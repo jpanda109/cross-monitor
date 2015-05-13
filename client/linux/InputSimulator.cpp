@@ -40,10 +40,10 @@ void InputSimulator::processInput(const std::string &input) {
             else if (tokens[1] == "Button") {
                 bool down = tokens[3] == "Down";
                 if (tokens[2] == "Left") {
-                    mouseButton(0, down);
+                    mouseButton(1, down);
                 }
                 else if (tokens[2] == "Right") {
-                    mouseButton(2, down);
+                    mouseButton(3, down);
                 }
             }
         }
