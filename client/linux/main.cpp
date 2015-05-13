@@ -7,16 +7,7 @@
 
 bool QUIT = false;
 
-std::vector<std::string> splitString(std::string &input) {
-    std::vector<std::string> info;
-    std::stringstream ssin(input);
-    while (ssin.good()) {
-        std::string value;
-        ssin >> value;
-        info.push_back(value);
-    }
-    return info;
-}
+std::vector<std::string> splitString(std::string &input);
 
 int main() {
     Display *display = nullptr;
@@ -77,4 +68,16 @@ int main() {
 
     XCloseDisplay(display);
     return 0;
+}
+
+
+std::vector<std::string> splitString(std::string &input) {
+    std::vector<std::string> info;
+    std::stringstream ssin(input);
+    while (ssin.good()) {
+        std::string value;
+        ssin >> value;
+        info.push_back(value);
+    }
+    return info;
 }
